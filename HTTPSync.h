@@ -10,12 +10,12 @@ using namespace std;
 
 
 
-class HTTPConnection {
+class HTTPSync {
 	
 	public:
 
-		HTTPConnection();
-		~HTTPConnection();
+		HTTPSync();
+		~HTTPSync();
 
 		void setShipID(string shipID);
 		void setShipPWD(string shipPWD);

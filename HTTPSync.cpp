@@ -7,43 +7,43 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
   return size*count;
 }
 
-HTTPConnection::HTTPConnection() {
+HTTPSync::HTTPSync() {
 	curl = curl_easy_init();
 }
 
-HTTPConnection::~HTTPConnection() {
+HTTPSync::~HTTPSync() {
 	curl_easy_cleanup(curl);
 }
 
-void HTTPConnection::setShipID(string ID) {
+void HTTPSync::setShipID(string ID) {
 	shipID = ID;
 }
 
-void HTTPConnection::setShipPWD(string PWD) {
+void HTTPSync::setShipPWD(string PWD) {
 	shipPWD = PWD;
 }
 
-void HTTPConnection::setServerURL(string URL) {
+void HTTPSync::setServerURL(string URL) {
 	serverURL = URL;
 }
 
-string HTTPConnection::checkUpdates() {
+string HTTPSync::checkUpdates() {
 	return serve("/?serv=checkUpdates&id="+shipID);
 }
 
-string HTTPConnection::getConfig() {
+string HTTPSync::getConfig() {
 	return serve("/?serv=getConfig&id="+shipID);
 }
 
-string HTTPConnection::getRoute() {
+string HTTPSync::getRoute() {
 	return serve("/?serv=getRoute&id="+shipID);
 }
 
-string HTTPConnection::pushLogs(string logs) {
+string HTTPSync::pushLogs(string logs) {
 	return serve("/?serv=pushLogs&id="+shipID+"&pwd="+shipPWD+"&data="+logs);
 }
 
-string HTTPConnection::serve(string serverCall) {
+string HTTPSync::serve(string serverCall) {
 	string response = "";
 	string URL = serverURL + serverCall;
 	if(curl) {
