@@ -1,7 +1,5 @@
-#include "HTTPConnection.h"
-#include "JSONBlock.h"
-#include "JSONArray.h"
-#include "JSONData.h"
+#include "HTTPSync.h"
+#include "JSON.h"
 #include <iostream>
 
 using namespace std;
