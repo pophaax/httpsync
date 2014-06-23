@@ -16,7 +16,7 @@ using namespace std;
 class IEncoder {
 	
 	public:
-		~IEncoder() {}
+		virtual ~IEncoder() {}
 		virtual string toString() = 0;
 };
 
@@ -33,12 +33,12 @@ class JSONBlock : public IEncoder {
 		~JSONBlock();
 
 		void setName(string name);
-		void add(IEncoder *component);
+		void add(string component);
 		string toString();
 
 	private:
 		string m_name;
-		vector<IEncoder*> m_block;
+		vector<string> m_block;
 };
 
 /******************************************
@@ -54,12 +54,12 @@ class JSONArray : public IEncoder {
 		~JSONArray();
 
 		void setName(string name);
-		void add(JSONBlock block);
+		void add(string block);
 		string toString();
 
 	private:
 		string m_name;
-		vector<JSONBlock> m_array;
+		vector<string> m_array;
 };
 
 /******************************************

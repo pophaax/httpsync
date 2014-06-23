@@ -1,5 +1,6 @@
 #include "JSON.h"
 #include <sstream>
+#include <iostream>
 
 /******************************************
  *
@@ -17,7 +18,7 @@ void JSONBlock::setName(string name) {
 	m_name = name;
 }
 
-void JSONBlock::add(IEncoder *component) {
+void JSONBlock::add(string component) {
 	m_block.push_back(component);
 }
 
@@ -35,7 +36,7 @@ string JSONBlock::toString() {
 		if(i>0){
 			sstm << ",";
 		}
-		sstm << m_block.at(i)->toString();
+		sstm << m_block.at(i);
 	}
 	sstm << "}";
 
@@ -59,7 +60,7 @@ void JSONArray::setName(string name) {
 	m_name = name;
 }
 
-void JSONArray::add(JSONBlock block) {
+void JSONArray::add(string block) {
 	m_array.push_back(block);
 
 }
@@ -78,7 +79,7 @@ string JSONArray::toString() {
 		if(i>0){
 			sstm << ",";
 		}
-		sstm << m_array.at(i).toString();
+		sstm << m_array.at(i);
 	}
 	sstm << "]";
 
