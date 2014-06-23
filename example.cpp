@@ -4,8 +4,6 @@
 
 using namespace std;
 
-// Compile with this:
-// g++ -lcurl client.cpp httpconnection.cpp JSONBlock.cpp JSONArray.cpp JSONData.cpp
 int main() {
 
 	HTTPSync conn;
