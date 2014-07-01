@@ -27,8 +27,8 @@ void HTTPSync::setServerURL(string URL) {
 	serverURL = URL;
 }
 
-string HTTPSync::checkUpdates() {
-	return serve("/?serv=checkUpdates&id="+shipID);
+string HTTPSync::getSetup() {
+	return serve("/?serv=getSetup&id="+shipID);
 }
 
 string HTTPSync::getConfig() {

@@ -21,8 +21,7 @@ class HTTPSync {
 		void setShipPWD(string shipPWD);
 		void setServerURL(string URL);
 
-		string checkUpdates();
-
+		string getSetup();
 		string getConfig();
 		string getRoute();
 
