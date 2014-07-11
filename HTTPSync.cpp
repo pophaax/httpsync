@@ -28,28 +28,29 @@ void HTTPSync::setServerURL(string URL) {
 }
 
 string HTTPSync::getSetup() {
-	return serve("serv=getSetup&id="+shipID+"&pwd="+shipPWD);
+	return serve("/?serv=getSetup&id="+shipID+"&pwd="+shipPWD);
 }
 
 string HTTPSync::getConfig() {
-	return serve("serv=getConfig&id="+shipID+"&pwd="+shipPWD);
+	return serve("/?serv=getConfig&id="+shipID+"&pwd="+shipPWD);
 }
 
 string HTTPSync::getRoute() {
-	return serve("serv=getRoute&id="+shipID+"&pwd="+shipPWD);
+	return serve("/?serv=getRoute&id="+shipID+"&pwd="+shipPWD);
 }
 
 string HTTPSync::pushLogs(string logs) {
 	//string URL = serverURL + serverCall;
-	return serve("serv=pushLogs&id="+shipID+"&pwd="+shipPWD+"&data="+logs);
+	return serve("/?serv=pushLogs&id="+shipID+"&pwd="+shipPWD+"&data="+logs);
 }
 
 string HTTPSync::serve(string serverCall) {
 	string response = "";
+	string url = serverURL + serverCall;
 	if(curl) {
-		curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
-   		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
+		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+		//curl_easy_setopt(curl, CURLOPT_POST, 1);
+   		//curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
 	    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
 	    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
