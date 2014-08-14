@@ -58,7 +58,7 @@ string HTTPSync::serve(string serverCall) {
 		res = curl_easy_perform(curl);
 		/* Check for errors */ 
 		if(res != CURLE_OK)
-			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+			throw ( string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
 	}
 
 	return response;
