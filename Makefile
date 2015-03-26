@@ -25,3 +25,6 @@ $(FILE_HTTP) : $(SOURCES_HTTP) $(HEADERS_HTTP)
 
 example : $(SOURCES) $(HEADERS) example.cpp
 	$(CC) $(SOURCES) example.cpp $(FLAGS) $(LIBS) -o example
+
+clean :
+	rm -f example
