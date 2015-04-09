@@ -6,9 +6,6 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-
-
 
 class HTTPSync {
 	
@@ -17,26 +14,26 @@ class HTTPSync {
 		HTTPSync();
 		~HTTPSync();
 
-		void setShipID(string shipID);
-		void setShipPWD(string shipPWD);
-		void setServerURL(string URL);
+		void setShipID(std::string shipID);
+		void setShipPWD(std::string shipPWD);
+		void setServerURL(std::string URL);
 
-		string getSetup();
-		string getConfig();
-		string getRoute();
+		std::string getSetup();
+		std::string getConfig();
+		std::string getRoute();
 
-		string pushLogs(string logs);
+		std::string pushLogs(std::string logs);
 
 	private:
 
 		CURL *curl;
 		CURLcode res;
 
-		string shipID;
-		string shipPWD;
-		string serverURL;
+		std::string shipID;
+		std::string shipPWD;
+		std::string serverURL;
 
-		string serve(string serverCall);
+		std::string serve(std::string serverCall);
 };
 
 #endif

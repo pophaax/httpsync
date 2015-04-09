@@ -1,7 +1,6 @@
 #include "HTTPSync.h"
 #include <iostream>
 
-using namespace std;
 
 int main() {
 
@@ -9,12 +8,12 @@ int main() {
 	conn.setShipID("SHIP_ID");
 	conn.setShipPWD("PASSWORD");
 	conn.setServerURL("SERVER_URL");
-	cout << "---------------------------------------------------------" << endl;
-	cout << conn.getSetup() << endl;
-	cout << "---------------------------------------------------------" << endl;
-	cout << conn.getConfig() << endl;
-	cout << "---------------------------------------------------------" << endl;
-	cout << conn.getRoute() << endl;
-	cout << "---------------------------------------------------------" << endl;
+	std::cout << "---------------------------------------------------------" << std::endl;
+	std::cout << conn.getSetup() << std::endl;
+	std::cout << "---------------------------------------------------------" << std::endl;
+	std::cout << conn.getConfig() << std::endl;
+	std::cout << "---------------------------------------------------------" << std::endl;
+	std::cout << conn.getRoute() << std::endl;
+	std::cout << "---------------------------------------------------------" << std::endl;
 }
 
