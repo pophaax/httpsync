@@ -1,10 +1,8 @@
 #ifndef __HTTPSYNC_H__
 #define __HTTPSYNC_H__
 
-#include <stdio.h>
 #include <curl/curl.h>
 #include <string>
-#include <iostream>
 
 
 class HTTPSync {
