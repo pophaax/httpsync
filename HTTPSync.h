@@ -1,16 +1,26 @@
 #ifndef __HTTPSYNC_H__
 #define __HTTPSYNC_H__
 
+#include "../dbhandler/DBHandler.h"
+#include "../logger/Logger.h"
+
+
 #include <curl/curl.h>
 #include <string>
+#include <mutex>
 
 
 class HTTPSync {
 	
 	public:
 
-		HTTPSync();
+		HTTPSync(DBHandler *db);
 		~HTTPSync();
+
+		void run();
+		void setupHTTPSync();
+		void syncServer();
+		void updateState();
 
 		void setShipID(std::string shipID);
 		void setShipPWD(std::string shipPWD);
@@ -30,8 +40,16 @@ class HTTPSync {
 		std::string shipID;
 		std::string shipPWD;
 		std::string serverURL;
+		bool m_running;
+		Logger m_logger;
+		std::mutex m_mutex;
+
+		DBHandler *m_dbHandler;
 
 		std::string serve(std::string serverCall);
+
+		bool isRunning();
+		void close();
 };
 
 #endif

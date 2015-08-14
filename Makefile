@@ -9,7 +9,7 @@
 
 CC = g++
 FLAGS = -Wall -pedantic -Werror -std=c++14
-LIBS = -lcurl
+LIBS = -lcurl -lsqlite3 -I$(SAILINGROBOTS_HOME)
 
 SOURCES_HTTP = HTTPSync.cpp
 HEADERS_HTTP = HTTPSync.h

@@ -7,13 +7,80 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
   return size*count;
 }
 
-HTTPSync::HTTPSync() {
+
+
+HTTPSync::HTTPSync(DBHandler *db) : m_dbHandler(db)
+{
 	curl = curl_easy_init();
 }
 
 HTTPSync::~HTTPSync() {
 	curl_easy_cleanup(curl);
 }
+
+
+/* --------------------- taken from sailingrobot ------------------------ */
+
+
+void HTTPSync::run()
+{
+	std::cout << "HTTPSync thread started." << std::endl;
+	m_logger.info("HTTPSync thread started.");
+	setupHTTPSync();
+	updateState();
+
+	while(isRunning())
+	{
+		syncServer();
+	}
+
+	std::cout << "HTTPSync thread exited." << std::endl;
+	m_logger.info("HTTPSync thread exited.");
+}
+
+void HTTPSync::setupHTTPSync() {
+	try {
+		setShipID( m_dbHandler->retriveCell("server", "1", "boat_id") );
+		setShipPWD( m_dbHandler->retriveCell("server", "1", "boat_pwd") );
+		setServerURL( m_dbHandler->retriveCell("server", "1", "srv_addr") );
+	} catch (const char * error) {
+		m_logger.error("SailingRobot::setupHTTPSync() failed");
+	}
+	m_logger.info("setupHTTPSync() done");
+}
+
+void HTTPSync::syncServer() {
+	try {
+		std::string response = pushLogs( m_dbHandler->getLogs() );
+		m_dbHandler->removeLogs(response);
+	} catch (const char * error) {
+		m_logger.error(error);
+	}
+}
+
+void HTTPSync::updateState() {
+	try {
+		std::string setup = getSetup();
+		bool stateChanged = false;
+		if (m_dbHandler->revChanged("cfg_rev", setup) ) {
+			m_dbHandler->updateTable("configs", getConfig());
+			stateChanged = true;
+			m_logger.info("config state updated");
+		}
+		if (m_dbHandler->revChanged("rte_rev", setup) ) {
+			m_dbHandler->updateTable("waypoints", getRoute());
+			stateChanged = true;
+			m_logger.info("route state updated");
+		}
+		if (stateChanged)  {
+			m_dbHandler->updateTable("state", getSetup());
+		}
+	} catch (const char * error) {
+		m_logger.error(error);
+	}
+}
+
+/*---------------------------------------------------------------------------*/
 
 void HTTPSync::setShipID(std::string ID) {
 	shipID = ID;
@@ -62,4 +129,20 @@ std::string HTTPSync::serve(std::string serverCall) {
 	}
 
 	return response;
+}
+
+bool HTTPSync::isRunning()
+{
+	bool running;
+	m_mutex.lock();
+	running = m_running;
+	m_mutex.unlock();
+	return running;
+}
+
+void HTTPSync::close()
+{
+	m_mutex.lock();
+	m_running = false;
+	m_mutex.unlock();
 }
