@@ -8,7 +8,7 @@
 #######################################################
 
 CC = g++
-FLAGS = -Wall -pedantic -Werror -std=c++14
+FLAGS = -g -Wall -pedantic -Werror -std=c++14
 LIBS = -lcurl -lsqlite3 -I$(SAILINGROBOTS_HOME)
 
 SOURCES_HTTP = HTTPSync.cpp
