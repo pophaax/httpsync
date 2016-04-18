@@ -32,6 +32,9 @@ void HTTPSync::run()
 	while(isRunning())
 	{
 		syncServer();
+
+    std::this_thread::sleep_for(
+			std::chrono::milliseconds(3000));
 	}
 
 	std::cout << "HTTPSync thread exited." << std::endl;
@@ -121,9 +124,9 @@ std::string HTTPSync::serve(std::string serverCall) {
 	    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
 	    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
-		/* Perform the request, res will get the return code */ 
+		/* Perform the request, res will get the return code */
 		res = curl_easy_perform(curl);
-		/* Check for errors */ 
+		/* Check for errors */
 		if(res != CURLE_OK)
 			throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
 	}
