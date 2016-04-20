@@ -11,6 +11,7 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
 
 HTTPSync::HTTPSync(DBHandler *db) : m_dbHandler(db)
 {
+  m_running = true;
 	curl = curl_easy_init();
 }
 
@@ -31,10 +32,15 @@ void HTTPSync::run()
 
 	while(isRunning())
 	{
-		syncServer();
+    try {
+		    syncServer();
+      } catch(const char * error) {
+        m_logger.error("error in HTTPSync run:");
+        m_logger.error(error);
+      }
 
     std::this_thread::sleep_for(
-			std::chrono::milliseconds(3000));
+			std::chrono::milliseconds(1000));
 	}
 
 	std::cout << "HTTPSync thread exited." << std::endl;
@@ -66,7 +72,7 @@ void HTTPSync::updateState() {
 		std::string setup = getSetup();
 		bool stateChanged = false;
 		if (m_dbHandler->revChanged("cfg_rev", setup) ) {
-			m_dbHandler->updateTable("configs", getConfig());
+			// m_dbHandler->updateTable("configs", getConfig());
 			stateChanged = true;
 			m_logger.info("config state updated");
 		}
@@ -79,7 +85,7 @@ void HTTPSync::updateState() {
 			m_dbHandler->updateTable("state", getSetup());
 		}
 	} catch (const char * error) {
-		m_logger.error(error);
+		m_logger.error("asf");
 	}
 }
 
