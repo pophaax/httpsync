@@ -85,7 +85,8 @@ void HTTPSync::updateState() {
 			m_dbHandler->updateTable("state", getSetup());
 		}
 	} catch (const char * error) {
-		m_logger.error("asf");
+		m_logger.error("error in updateState(): ");
+    m_logger.error(error);
 	}
 }
 
