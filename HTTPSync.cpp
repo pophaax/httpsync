@@ -28,7 +28,7 @@ void HTTPSync::run()
 	std::cout << "HTTPSync thread started." << std::endl;
 	m_logger.info("HTTPSync thread started.");
 	setupHTTPSync();
-	updateState();
+	// updateState();
 
 	while(isRunning())
 	{
@@ -40,7 +40,7 @@ void HTTPSync::run()
       }
 
     std::this_thread::sleep_for(
-			std::chrono::milliseconds(1000));
+			std::chrono::milliseconds(2000));
 	}
 
 	std::cout << "HTTPSync thread exited." << std::endl;
