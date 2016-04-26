@@ -54,9 +54,13 @@ void HTTPSync::setupHTTPSync() {
 
 void HTTPSync::syncServer() {
 	try {
-    std::string response = pushLog(m_dbHandler->getLogs(), "pushAllLogs");
-    std::cout << response << std::endl;
-		m_dbHandler->removeLogs(response);
+    // can fetch server response from pushLog
+    pushLog(m_dbHandler->getLogs(), "pushAllLogs");
+		// m_dbHandler->removeLogs(response);
+
+    // clearing the datalogs after push. When system datalogs is
+    // cleared are all the other datalog tables cleared aswell.
+  	m_dbHandler->clearTable("system_datalogs");
 	} catch (const char * error) {
     m_logger.error("Error in sync server : ");
 		m_logger.error(error);
