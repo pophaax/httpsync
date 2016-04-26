@@ -32,15 +32,9 @@ void HTTPSync::run()
 
 	while(isRunning())
 	{
-    try {
-		    syncServer();
-      } catch(const char * error) {
-        m_logger.error("error in HTTPSync run:");
-        m_logger.error(error);
-      }
-
-    std::this_thread::sleep_for(
-			std::chrono::milliseconds(2000));
+		syncServer();
+    // std::this_thread::sleep_for(
+    //   std::chrono::milliseconds(1000));
 	}
 
 	std::cout << "HTTPSync thread exited." << std::endl;
@@ -60,9 +54,11 @@ void HTTPSync::setupHTTPSync() {
 
 void HTTPSync::syncServer() {
 	try {
-		std::string response = pushLogs( m_dbHandler->getLogs() );
+    std::string response = pushLog(m_dbHandler->getLogs(), "pushAllLogs");
+    std::cout << response << std::endl;
 		m_dbHandler->removeLogs(response);
 	} catch (const char * error) {
+    m_logger.error("Error in sync server : ");
 		m_logger.error(error);
 	}
 }
@@ -72,7 +68,7 @@ void HTTPSync::updateState() {
 		std::string setup = getSetup();
 		bool stateChanged = false;
 		if (m_dbHandler->revChanged("cfg_rev", setup) ) {
-			// m_dbHandler->updateTable("configs", getConfig());
+			m_dbHandler->updateTable("configs", getConfig());
 			stateChanged = true;
 			m_logger.info("config state updated");
 		}
@@ -85,8 +81,7 @@ void HTTPSync::updateState() {
 			m_dbHandler->updateTable("state", getSetup());
 		}
 	} catch (const char * error) {
-		m_logger.error("error in updateState(): ");
-    m_logger.error(error);
+		m_logger.error(error);
 	}
 }
 
@@ -116,14 +111,18 @@ std::string HTTPSync::getRoute() {
 	return serve("/?serv=getRoute&id="+shipID+"&pwd="+shipPWD);
 }
 
-std::string HTTPSync::pushLogs(std::string logs) {
-	//string URL = serverURL + serverCall;
-	return serve("/?serv=pushLogs&id="+shipID+"&pwd="+shipPWD+"&data="+logs);
+std::string HTTPSync::getConfigs(std::string config) {
+  	return serve("/?serv=get" + config + "&id="+shipID+"&pwd="+shipPWD);
+}
+
+std::string HTTPSync::pushLog(std::string logs, std::string call) {
+  return serve("/?serv=" + call + "&id="+shipID+"&pwd="+shipPWD+"&data="+logs);
 }
 
 std::string HTTPSync::serve(std::string serverCall) {
 	std::string response = "";
 	std::string url = serverURL + serverCall;
+  // std::cout << url << std::endl;
 	if(curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		//curl_easy_setopt(curl, CURLOPT_POST, 1);

@@ -4,9 +4,9 @@
 #include "../dbhandler/DBHandler.h"
 #include "../logger/Logger.h"
 #include "models/SystemStateModel.h"
+
 #include <chrono>
 #include <thread>
-
 #include <curl/curl.h>
 #include <string>
 #include <mutex>
@@ -32,7 +32,8 @@ class HTTPSync {
 		std::string getConfig();
 		std::string getRoute();
 
-		std::string pushLogs(std::string logs);
+		std::string pushLog(std::string logs, std::string call);
+		std::string getConfigs(std::string config);
 
 	private:
 
