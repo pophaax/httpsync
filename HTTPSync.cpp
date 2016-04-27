@@ -56,7 +56,6 @@ void HTTPSync::setupHTTPSync() {
 
 void HTTPSync::syncServer() {
  try {
-   m_dbHandler->getWaypoints();
    // can fetch server response from pushLog
    pushData(m_dbHandler->getLogs(), "pushAllLogs");
 
