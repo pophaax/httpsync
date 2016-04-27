@@ -23,6 +23,7 @@ class HTTPSync {
 		void setupHTTPSync();
 		void syncServer();
 		void updateState();
+		void pushWaypoints();
 
 		void setShipID(std::string shipID);
 		void setShipPWD(std::string shipPWD);
@@ -32,7 +33,7 @@ class HTTPSync {
 		std::string getConfig();
 		std::string getRoute();
 
-		std::string pushLog(std::string logs, std::string call);
+		std::string pushData(std::string data, std::string call);
 		std::string getConfigs(std::string config);
 
 	private:
