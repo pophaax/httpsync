@@ -36,7 +36,7 @@ void HTTPSync::run()
  {
    syncServer();
   //  std::this_thread::sleep_for(
-  //    std::chrono::milliseconds(1000));
+  //    std::chrono::milliseconds(3000));
  }
 
  std::cout << "HTTPSync thread exited." << std::endl;
@@ -62,7 +62,8 @@ void HTTPSync::syncServer() {
    // clearing the datalogs after push.
    m_dbHandler->clearDatalogTables();
  } catch (const char * error) {
-    m_logger.error("Error in HTTPSync::syncserver");
+  //  m_logger.error("Error in HTTPSync::syncserver");
+  //  m_logger.error(std::string(error));
  }
 }
 
@@ -89,20 +90,12 @@ void HTTPSync::updateState() {
 }
 
 void HTTPSync::pushWaypoints() {
- int rows = 0;
- try {
-   rows = m_dbHandler->getRows("waypoints");
- } catch(const char * error) {
-   m_logger.error("Error in HTTPSync::pushWaypoints when fetching rows");
- }
- for (auto i = 0; i < rows; ++i) {
+
    try {
      pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
    } catch(const char* error) {
-     m_logger.error("Error in HTTPSync::pushWaypoints when pushing data");
+     m_logger.error("Error in HTTPSync::pushWaypoints ");
    }
- }
-
 }
 
 void HTTPSync::setShipID(std::string ID) {
