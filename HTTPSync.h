@@ -35,6 +35,8 @@ class HTTPSync {
 
 		std::string pushData(std::string data, std::string call);
 		std::string getConfigs(std::string config);
+		void updateConfigs();
+		bool checkIfNewConfig();
 
 	private:
 

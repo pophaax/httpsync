@@ -34,6 +34,7 @@ void HTTPSync::run()
 
  while(isRunning())
  {
+   updateConfigs();
    syncServer();
   //  std::this_thread::sleep_for(
   //    std::chrono::milliseconds(3000));
@@ -123,11 +124,26 @@ std::string HTTPSync::getRoute() {
 }
 
 std::string HTTPSync::getConfigs(std::string config) {
-  return serve("/?serv=get" + config + "&id="+shipID+"&pwd="+shipPWD);
+  return serve("/?serv=get" + config + "&id=" + shipID + "&pwd=" + shipPWD);
 }
 
 std::string HTTPSync::pushData(std::string data, std::string call) {
   return serve("/?serv=" + call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data);
+}
+
+bool HTTPSync::checkIfNewConfig() {
+  if (serve("/?serv=checkIfNewConfigs&id=" + shipID + "&pwd=" + shipPWD) == "1")
+    return true;
+
+  return false;
+}
+
+void HTTPSync::updateConfigs() {
+
+  if(checkIfNewConfig()) {
+    std::string configs = getConfigs("AllConfigs");
+    m_dbHandler->updateConfigs(configs);
+  }
 }
 
 std::string HTTPSync::serve(std::string serverCall) {
