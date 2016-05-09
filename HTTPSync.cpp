@@ -45,9 +45,9 @@ void HTTPSync::run()
 
 void HTTPSync::setupHTTPSync() {
  try {
-   setShipID( m_dbHandler->retriveCell("server", "1", "boat_id") );
-   setShipPWD( m_dbHandler->retriveCell("server", "1", "boat_pwd") );
-   setServerURL( m_dbHandler->retriveCell("server", "1", "srv_addr") );
+   setShipID( m_dbHandler->retrieveCell("server", "1", "boat_id") );
+   setShipPWD( m_dbHandler->retrieveCell("server", "1", "boat_pwd") );
+   setServerURL( m_dbHandler->retrieveCell("server", "1", "srv_addr") );
  } catch (const char * error) {
    m_logger.error("SailingRobot::setupHTTPSync() failed");
  }
