@@ -34,7 +34,7 @@ void HTTPSync::run()
 
  while(isRunning())
  {
-   updateConfigs();
+   // updateConfigs();
    syncServer();
   //  std::this_thread::sleep_for(
   //    std::chrono::milliseconds(3000));
@@ -140,10 +140,11 @@ bool HTTPSync::checkIfNewConfig() {
 
 void HTTPSync::updateConfigs() {
 
-  if(checkIfNewConfig()) {
-    std::string configs = getConfigs("AllConfigs");
-    m_dbHandler->updateConfigs(configs);
-  }
+    if(checkIfNewConfig()) {
+        std::string configs = getConfigs("AllConfigs");
+        m_dbHandler->updateConfigs(configs);
+        // m_dbHandler->insert("state", "configsUpdated", "1");
+    }
 }
 
 std::string HTTPSync::serve(std::string serverCall) {
