@@ -139,7 +139,7 @@ bool HTTPSync::checkIfNewConfig() {
 }
 
 void HTTPSync::updateConfigs() {
-    std::cout << checkIfNewConfig() << std::endl;
+    // std::cout << checkIfNewConfig() << std::endl;
     if(checkIfNewConfig()) {
         std::string configs = getConfigs("AllConfigs");
         m_dbHandler->updateConfigs(configs);
