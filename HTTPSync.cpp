@@ -68,27 +68,27 @@ void HTTPSync::syncServer() {
  }
 }
 
-void HTTPSync::updateState() {
- try {
-   std::string setup = getSetup();
-   bool stateChanged = false;
-   if (m_dbHandler->revChanged("cfg_rev", setup) ) {
-     m_dbHandler->updateTable("configs", getConfig());
-     stateChanged = true;
-     m_logger.info("config state updated");
-   }
-   if (m_dbHandler->revChanged("rte_rev", setup) ) {
-     m_dbHandler->updateTable("waypoints", getRoute());
-     stateChanged = true;
-     m_logger.info("route state updated");
-   }
-   if (stateChanged)  {
-     m_dbHandler->updateTable("state", getSetup());
-   }
- } catch (const char * error) {
-   m_logger.error(error);
- }
-}
+// void HTTPSync::updateState() {
+//  try {
+//    std::string setup = getSetup();
+//    bool stateChanged = false;
+//    if (m_dbHandler->revChanged("cfg_rev", setup) ) {
+//      m_dbHandler->updateTable("configs", getConfig());
+//      stateChanged = true;
+//      m_logger.info("config state updated");
+//    }
+//    if (m_dbHandler->revChanged("rte_rev", setup) ) {
+//      m_dbHandler->updateTable("waypoints", getRoute());
+//      stateChanged = true;
+//      m_logger.info("route state updated");
+//    }
+//    if (stateChanged)  {
+//      m_dbHandler->updateTable("state", getSetup());
+//    }
+//  } catch (const char * error) {
+//    m_logger.error(error);
+//  }
+// }
 
 void HTTPSync::pushWaypoints() {
 
@@ -132,18 +132,18 @@ std::string HTTPSync::pushData(std::string data, std::string call) {
 }
 
 bool HTTPSync::checkIfNewConfig() {
-  if (serve("/?serv=checkIfNewConfigs&id=" + shipID + "&pwd=" + shipPWD) == "1")
-    return true;
+    if (serve("/?serv=checkIfNewConfigs&id=" + shipID + "&pwd=" + shipPWD) == "1")
+        return true;
 
-  return false;
+    return false;
 }
 
 void HTTPSync::updateConfigs() {
-
+    std::cout << checkIfNewConfig() << std::endl;
     if(checkIfNewConfig()) {
         std::string configs = getConfigs("AllConfigs");
         m_dbHandler->updateConfigs(configs);
-        // m_dbHandler->insert("state", "configsUpdated", "1");
+        m_dbHandler->updateTable("state", "configsUpdated", "1","1");
     }
 }
 
