@@ -24,14 +24,11 @@ class HTTPSync {
 		void syncServer();
 		void updateState();
 		void pushWaypoints();
+		void pushConfigs();
 
 		void setShipID(std::string shipID);
 		void setShipPWD(std::string shipPWD);
 		void setServerURL(std::string URL);
-
-		std::string getSetup();
-		std::string getConfig();
-		std::string getRoute();
 
 		std::string pushData(std::string data, std::string call);
 		std::string getConfigs(std::string config);
@@ -47,9 +44,9 @@ class HTTPSync {
 		std::string shipPWD;
 		std::string serverURL;
 		bool m_running;
+		int m_delay;
 		Logger m_logger;
 		std::mutex m_mutex;
-		int m_delay;
 
 		DBHandler *m_dbHandler;
 
