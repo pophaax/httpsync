@@ -10,7 +10,7 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
 
 
 
-HTTPSync::HTTPSync(DBHandler *db) : m_dbHandler(db)
+HTTPSync::HTTPSync(DBHandler *db,int delay) : m_dbHandler(db), m_delay(delay)
 {
   m_running = true;
   curl = curl_easy_init();
@@ -34,10 +34,9 @@ void HTTPSync::run()
 
  while(isRunning())
  {
-   // updateConfigs();
-   syncServer();
-  //  std::this_thread::sleep_for(
-  //    std::chrono::milliseconds(3000));
+   	//updateConfigs();
+   	syncServer();
+	std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
  }
 
  std::cout << "HTTPSync thread exited." << std::endl;
