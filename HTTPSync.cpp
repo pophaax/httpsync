@@ -57,10 +57,9 @@ void HTTPSync::setupHTTPSync() {
 void HTTPSync::syncServer() {
     try {
         // can fetch server response from pushLog
-        pushData(m_dbHandler->getLogs(), "pushAllLogs");
-
+        std::string response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
         // clearing the datalogs after push.
-        m_dbHandler->clearDatalogTables();
+        m_dbHandler->removeLogs(response);
     } catch (const char * error) {
         //  m_logger.error("Error in HTTPSync::syncserver");
         //  m_logger.error(std::string(error));
@@ -69,7 +68,8 @@ void HTTPSync::syncServer() {
 
 void HTTPSync::pushWaypoints() {
    try {
-     pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
+     std::string response = pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
+     std::cout << "response :  "<< response << std::endl;
    } catch(const char* error) {
      m_logger.error("Error in HTTPSync::pushWaypoints ");
    }
@@ -102,7 +102,26 @@ std::string HTTPSync::getConfigs(std::string config) {
 }
 
 std::string HTTPSync::pushData(std::string data, std::string call) {
-    return serve("/?serv=" + call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data);
+    std::string dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
+    std::string response = "";
+    if(curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
+        // curl_easy_setopt(curl, CURLOPT_POST, 1);
+        //  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.length() * sizeof(std::string));
+         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dataCall.c_str());
+         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
+         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+
+        /* Perform the request, res will get the return code */
+        res = curl_easy_perform(curl);
+        std::cout << "res : " << res  << std::endl;
+    /* Check for errors */
+    if(res != CURLE_OK)
+        m_logger.error("Error in HTTPSync::serve() ");
+        throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
+    }
+
+    return response;
 }
 
 bool HTTPSync::checkIfNewConfig() {
@@ -113,7 +132,7 @@ bool HTTPSync::checkIfNewConfig() {
 }
 
 void HTTPSync::updateConfigs() {
-    // std::cout << checkIfNewConfig() << std::endl;
+
     if(checkIfNewConfig()) {
         std::string configs = getConfigs("AllConfigs");
         m_dbHandler->updateConfigs(configs);
@@ -129,7 +148,7 @@ std::string HTTPSync::serve(std::string serverCall) {
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         //curl_easy_setopt(curl, CURLOPT_POST, 1);
-         //curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
+         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
          curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
          curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
 
