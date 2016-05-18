@@ -33,7 +33,7 @@ void HTTPSync::run() {
 
     while(isRunning())
     {
-        //updateConfigs();
+        // updateConfigs();
         syncServer();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
     }
@@ -54,14 +54,15 @@ void HTTPSync::setupHTTPSync() {
 }
 
 void HTTPSync::syncServer() {
+    std::string response = "";
     try {
         // can fetch server response from pushLog
-        std::string response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
+        response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
         // clearing the datalogs after push.
         m_dbHandler->removeLogs(response);
+        m_logger.info("Logs pushed to server");
     } catch (const char * error) {
-        //  m_logger.error("Error in HTTPSync::syncserver");
-        //  m_logger.error(std::string(error));
+         m_logger.error("Error in HTTPSync::syncserver , response : " + response);
     }
 }
 
@@ -96,13 +97,40 @@ void HTTPSync::setServerURL(std::string URL) {
 }
 
 
-std::string HTTPSync::getConfigs(std::string config) {
-    return serve("/?serv=get" + config + "&id=" + shipID + "&pwd=" + shipPWD);
+std::string HTTPSync::getData(std::string call) {
+    return serve("",call);
 }
 
 std::string HTTPSync::pushData(std::string data, std::string call) {
-    std::string dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
+    return serve(data, call);
+}
+
+bool HTTPSync::checkIfNewConfig() {
+    if (getData("checkIfNewConfigs") == "1")
+        return true;
+
+    return false;
+}
+
+void HTTPSync::updateConfigs() {
+
+    if(checkIfNewConfig()) {
+        std::string configs = getData("getAllConfigs");
+        m_dbHandler->updateConfigs(configs);
+        m_dbHandler->updateTable("state", "configsUpdated", "1","1");
+        m_logger.info("Configs fetched from web");
+        pushConfigs();
+    }
+}
+
+std::string HTTPSync::serve(std::string data, std::string call) {
+    std::string dataCall = "";
     std::string response = "";
+
+    if(data != "")
+        dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
+    else
+        dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD;
 
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
@@ -119,44 +147,6 @@ std::string HTTPSync::pushData(std::string data, std::string call) {
             throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
         }
     }
-    return response;
-}
-
-bool HTTPSync::checkIfNewConfig() {
-    if (serve("/?serv=checkIfNewConfigs&id=" + shipID + "&pwd=" + shipPWD) == "1")
-        return true;
-
-    return false;
-}
-
-void HTTPSync::updateConfigs() {
-
-    if(checkIfNewConfig()) {
-        std::string configs = getConfigs("AllConfigs");
-        m_dbHandler->updateConfigs(configs);
-        m_dbHandler->updateTable("state", "configsUpdated", "1","1");
-        pushConfigs();
-    }
-}
-
-std::string HTTPSync::serve(std::string serverCall) {
-    std::string response = "";
-    std::string url = serverURL + serverCall;
-    // std::cout << url << std::endl;
-    if(curl) {
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        //curl_easy_setopt(curl, CURLOPT_POST, 1);
-         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
-         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
-         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-
-        /* Perform the request, res will get the return code */
-        res = curl_easy_perform(curl);
-    /* Check for errors */
-    if(res != CURLE_OK)
-        throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
-    }
-
     return response;
 }
 

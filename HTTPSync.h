@@ -31,7 +31,7 @@ class HTTPSync {
 		void setServerURL(std::string URL);
 
 		std::string pushData(std::string data, std::string call);
-		std::string getConfigs(std::string config);
+		std::string getData(std::string call);
 		void updateConfigs();
 		bool checkIfNewConfig();
 
@@ -50,7 +50,7 @@ class HTTPSync {
 
 		DBHandler *m_dbHandler;
 
-		std::string serve(std::string serverCall);
+		std::string serve(std::string data, std::string call);
 
 		bool isRunning();
 		void close();
