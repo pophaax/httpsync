@@ -1,7 +1,6 @@
 
+
 #include "HTTPSync.h"
-
-
 
 size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
     ((std::string*)stream)->append((char*)ptr, 0, size*count);
@@ -69,7 +68,7 @@ void HTTPSync::syncServer() {
 void HTTPSync::pushWaypoints() {
    try {
      std::string response = pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
-     std::cout << "response :  "<< response << std::endl;
+     m_logger.info("Waypoints pushed to server");
    } catch(const char* error) {
      m_logger.error("Error in HTTPSync::pushWaypoints ");
    }
@@ -104,6 +103,7 @@ std::string HTTPSync::getConfigs(std::string config) {
 std::string HTTPSync::pushData(std::string data, std::string call) {
     std::string dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
     std::string response = "";
+
     if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
         // curl_easy_setopt(curl, CURLOPT_POST, 1);
@@ -111,16 +111,14 @@ std::string HTTPSync::pushData(std::string data, std::string call) {
          curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dataCall.c_str());
          curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
          curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
-        std::cout << "res : " << res  << std::endl;
-    /* Check for errors */
-    if(res != CURLE_OK)
-        m_logger.error("Error in HTTPSync::serve() ");
-        throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
+        /* Check for errors */
+        if(res != CURLE_OK) {
+            m_logger.error("Error in HTTPSync::serve() " + std::string("HTTPSync::serve(): ") + curl_easy_strerror(res));
+            throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
+        }
     }
-
     return response;
 }
 
