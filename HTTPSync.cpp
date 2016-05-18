@@ -1,13 +1,9 @@
-
-
 #include "HTTPSync.h"
 
 size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
     ((std::string*)stream)->append((char*)ptr, 0, size*count);
     return size*count;
 }
-
-
 
 HTTPSync::HTTPSync(DBHandler *db,int delay) : m_dbHandler(db) {
     m_running = true;
@@ -17,17 +13,14 @@ HTTPSync::HTTPSync(DBHandler *db,int delay) : m_dbHandler(db) {
 
 HTTPSync::~HTTPSync() {
     curl_easy_cleanup(curl);
+    curl_global_cleanup();
 }
-
-
-/* --------------------- taken from sailingrobot ------------------------ */
-
 
 void HTTPSync::run() {
     std::cout << "HTTPSync thread started." << std::endl;
     m_logger.info("HTTPSync thread started.");
+
     setupHTTPSync();
-    // updateState();
     // pushConfigs();
     pushWaypoints();
 
@@ -58,7 +51,7 @@ void HTTPSync::syncServer() {
     try {
         // can fetch server response from pushLog
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
-        // clearing the datalogs after push.
+        // remove logs after push
         m_dbHandler->removeLogs(response);
         m_logger.info("Logs pushed to server");
     } catch (const char * error) {
@@ -67,12 +60,12 @@ void HTTPSync::syncServer() {
 }
 
 void HTTPSync::pushWaypoints() {
-   try {
-     std::string response = pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
-     m_logger.info("Waypoints pushed to server");
-   } catch(const char* error) {
-     m_logger.error("Error in HTTPSync::pushWaypoints ");
-   }
+    try {
+        std::string response = pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
+        m_logger.info("Waypoints pushed to server");
+    } catch(const char* error) {
+        m_logger.error("Error in HTTPSync::pushWaypoints ");
+    }
 }
 
 void HTTPSync::pushConfigs() {
@@ -85,17 +78,16 @@ void HTTPSync::pushConfigs() {
 }
 
 void HTTPSync::setShipID(std::string ID) {
-  shipID = ID;
+    shipID = ID;
 }
 
 void HTTPSync::setShipPWD(std::string PWD) {
-  shipPWD = PWD;
+    shipPWD = PWD;
 }
 
 void HTTPSync::setServerURL(std::string URL) {
-  serverURL = URL;
+    serverURL = URL;
 }
-
 
 std::string HTTPSync::getData(std::string call) {
     return serve("",call);
@@ -113,7 +105,6 @@ bool HTTPSync::checkIfNewConfig() {
 }
 
 void HTTPSync::updateConfigs() {
-
     if(checkIfNewConfig()) {
         std::string configs = getData("getAllConfigs");
         m_dbHandler->updateConfigs(configs);
@@ -133,12 +124,11 @@ std::string HTTPSync::serve(std::string data, std::string call) {
         dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD;
 
     if(curl) {
+        //Send data through curl with POST
         curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
-        // curl_easy_setopt(curl, CURLOPT_POST, 1);
-        //  curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.length() * sizeof(std::string));
-         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dataCall.c_str());
-         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
-         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dataCall.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
         /* Check for errors */

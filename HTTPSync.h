@@ -30,11 +30,6 @@ class HTTPSync {
 		void setShipPWD(std::string shipPWD);
 		void setServerURL(std::string URL);
 
-		std::string pushData(std::string data, std::string call);
-		std::string getData(std::string call);
-		void updateConfigs();
-		bool checkIfNewConfig();
-
 	private:
 
 		CURL *curl;
@@ -52,6 +47,11 @@ class HTTPSync {
 
 		std::string serve(std::string data, std::string call);
 
+		std::string pushData(std::string data, std::string call);
+		std::string getData(std::string call);
+		void updateConfigs();
+
+		bool checkIfNewConfig();
 		bool isRunning();
 		void close();
 };
