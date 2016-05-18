@@ -106,11 +106,15 @@ bool HTTPSync::checkIfNewConfig() {
 
 void HTTPSync::updateConfigs() {
     if(checkIfNewConfig()) {
-        std::string configs = getData("getAllConfigs");
-        m_dbHandler->updateConfigs(configs);
-        m_dbHandler->updateTable("state", "configsUpdated", "1","1");
-        m_logger.info("Configs fetched from web");
-        pushConfigs();
+        try {
+            std::string configs = getData("getAllConfigs");
+            m_dbHandler->updateConfigs(configs);
+            m_dbHandler->updateTable("state", "configsUpdated", "1","1");
+            m_logger.info("Configs fetched from web");
+            pushConfigs();
+        } catch(const char* error) {
+            m_logger.error("Error in HTTPSync::updateConfigs : " + std::string(error));
+        }
     }
 }
 
