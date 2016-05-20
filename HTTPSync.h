@@ -51,6 +51,7 @@ class HTTPSync {
 		std::string getData(std::string call);
 		void updateConfigs();
 
+		std::string performCURLCall(std::string serverCall);
 		bool checkIfNewConfig();
 		bool isRunning();
 		void close();

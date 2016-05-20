@@ -49,7 +49,6 @@ void HTTPSync::setupHTTPSync() {
 void HTTPSync::syncServer() {
     std::string response = "";
     try {
-        // can fetch server response from pushLog
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
         // remove logs after push
         m_dbHandler->removeLogs(response);
@@ -119,27 +118,16 @@ void HTTPSync::updateConfigs() {
 }
 
 std::string HTTPSync::serve(std::string data, std::string call) {
-    std::string dataCall = "";
+    std::string serverCall = "";
     std::string response = "";
 
     if(data != "")
-        dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
+        serverCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
     else
-        dataCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD;
+        serverCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD;
 
     if(curl) {
-        //Send data through curl with POST
-        curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, dataCall.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
-        /* Perform the request, res will get the return code */
-        res = curl_easy_perform(curl);
-        /* Check for errors */
-        if(res != CURLE_OK) {
-            m_logger.error("Error in HTTPSync::serve() " + std::string("HTTPSync::serve(): ") + curl_easy_strerror(res));
-            throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
-        }
+        response = performCURLCall(serverCall);
     }
     return response;
 }
@@ -156,4 +144,24 @@ void HTTPSync::close() {
     m_mutex.lock();
     m_running = false;
     m_mutex.unlock();
+}
+
+std::string HTTPSync::performCURLCall(std::string serverCall) {
+
+    std::string response = "";
+
+    //Send data through curl with POST
+    curl_easy_setopt(curl, CURLOPT_URL, serverURL.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, serverCall.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_to_string);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
+    /* Perform the request, res will get the return code */
+    res = curl_easy_perform(curl);
+    /* Check for errors */
+    if(res != CURLE_OK) {
+        m_logger.error("Error in HTTPSync::serve() " + std::string("HTTPSync::serve(): ") + curl_easy_strerror(res));
+        throw ( std::string("HTTPSync::serve(): ") + curl_easy_strerror(res) ).c_str();
+    }
+
+    return response;
 }
