@@ -5,8 +5,9 @@ size_t write_to_string(void *ptr, size_t size, size_t count, void *stream) {
     return size*count;
 }
 
-HTTPSync::HTTPSync(DBHandler *db,int delay) : m_dbHandler(db) {
+HTTPSync::HTTPSync(DBHandler *db,int delay, bool removeLogs) : m_dbHandler(db) {
     m_running = true;
+    m_removeLogs = removeLogs;
     curl = curl_easy_init();
     m_delay = delay;
 }
@@ -50,8 +51,12 @@ void HTTPSync::syncServer() {
     std::string response = "";
     try {
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
+        
         // remove logs after push
-        m_dbHandler->removeLogs(response);
+        if(m_removeLogs) {
+            m_dbHandler->removeLogs(response);
+        }
+
         m_logger.info("Logs pushed to server");
     } catch (const char * error) {
          m_logger.error("Error in HTTPSync::syncserver , response : " + response);

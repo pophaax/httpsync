@@ -16,7 +16,7 @@ class HTTPSync {
 
 	public:
 
-		HTTPSync(DBHandler *db,int delay);
+		HTTPSync(DBHandler *db,int delay, bool removeLogs);
 		~HTTPSync();
 
 		void run();
@@ -39,6 +39,7 @@ class HTTPSync {
 		std::string shipPWD;
 		std::string serverURL;
 		bool m_running;
+		bool m_removeLogs;
 		int m_delay;
 		Logger m_logger;
 		std::mutex m_mutex;
