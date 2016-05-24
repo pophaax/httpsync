@@ -43,6 +43,8 @@ void HTTPSync::setupHTTPSync() {
         setServerURL( m_dbHandler->retrieveCell("server", "1", "srv_addr") );
     } catch (const char * error) {
         m_logger.error("SailingRobot::setupHTTPSync() failed");
+        //Kill thraed if setup fails
+        std::terminate();
     }
     m_logger.info("setupHTTPSync() done");
 }
@@ -51,7 +53,7 @@ void HTTPSync::syncServer() {
     std::string response = "";
     try {
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
-        
+
         // remove logs after push
         if(m_removeLogs) {
             m_dbHandler->removeLogs(response);
@@ -113,7 +115,7 @@ void HTTPSync::updateConfigs() {
         try {
             std::string configs = getData("getAllConfigs");
             m_dbHandler->updateConfigs(configs);
-            m_dbHandler->updateTable("state", "configsUpdated", "1","1");
+            m_dbHandler->updateTable("state", "configs_updated", "1","1");
             m_logger.info("Configs fetched from web");
             pushConfigs();
         } catch(const char* error) {
