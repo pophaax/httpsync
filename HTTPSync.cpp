@@ -28,7 +28,7 @@ void HTTPSync::run() {
     while(isRunning())
     {
         // updateConfigs();
-        syncServer();
+        pushDatalogs();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
     }
 
@@ -49,7 +49,7 @@ void HTTPSync::setupHTTPSync() {
     m_logger.info("setupHTTPSync() done");
 }
 
-void HTTPSync::syncServer() {
+void HTTPSync::pushDatalogs() {
     std::string response = "";
     try {
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");

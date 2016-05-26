@@ -21,7 +21,7 @@ class HTTPSync {
 
 		void run();
 		void setupHTTPSync();
-		void syncServer();
+		void pushDatalogs();
 		void updateState();
 		void pushWaypoints();
 		void pushConfigs();
