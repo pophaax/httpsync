@@ -55,9 +55,9 @@ void HTTPSync::syncServer() {
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
 
         // remove logs after push
-        if(m_removeLogs) {
+        // if(m_removeLogs) {
             m_dbHandler->removeLogs(response);
-        }
+        // }
 
         m_logger.info("Logs pushed to server");
     } catch (const char * error) {
