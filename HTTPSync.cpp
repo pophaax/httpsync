@@ -54,10 +54,12 @@ void HTTPSync::pushDatalogs() {
     try {
         response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
 
-        // remove logs after push
-        // if(m_removeLogs) {
-            m_dbHandler->removeLogs(response);
-        // }
+         //remove logs after push
+        if(m_removeLogs) {
+            //m_dbHandler->removeLogs(response);
+            m_dbHandler->clearLogs();
+            m_logger.info("response code: " + response);
+        }
 
         m_logger.info("Logs pushed to server");
     } catch (const char * error) {
@@ -127,6 +129,7 @@ void HTTPSync::updateConfigs() {
 std::string HTTPSync::serve(std::string data, std::string call) {
     std::string serverCall = "";
     std::string response = "";
+
 
     if(data != "")
         serverCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
