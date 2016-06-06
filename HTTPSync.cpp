@@ -58,7 +58,7 @@ void HTTPSync::pushDatalogs() {
         if(m_removeLogs) {
             //m_dbHandler->removeLogs(response);
             m_dbHandler->clearLogs();
-            m_logger.info("response code: " + response);
+            //m_logger.info("response code: " + response);
         }
 
         m_logger.info("Logs pushed to server");
