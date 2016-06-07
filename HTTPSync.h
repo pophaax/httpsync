@@ -2,7 +2,7 @@
 #define __HTTPSYNC_H__
 
 #include "../dbhandler/DBHandler.h"
-#include "../logger/Logger.h"
+#include "logger/Logger.h"
 #include "models/SystemStateModel.h"
 
 #include <chrono>
@@ -41,6 +41,7 @@ class HTTPSync {
 		bool m_running;
 		bool m_removeLogs;
 		int m_delay;
+		int m_pushOnlyLatestLogs;
 		Logger m_logger;
 		std::mutex m_mutex;
 
