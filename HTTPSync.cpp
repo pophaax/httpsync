@@ -37,10 +37,16 @@ void HTTPSync::run() {
 }
 
 void HTTPSync::setupHTTPSync() {
+
+    m_pushOnlyLatestLogs = true;
+    //Not yet implemented in database:
+    //m_onlyLatestLogs = m_dbHandler->retrieveCellAsInt("httpsync_config", "1", "push_only_latest_logs");
+
     try {
         setShipID( m_dbHandler->retrieveCell("server", "1", "boat_id") );
         setShipPWD( m_dbHandler->retrieveCell("server", "1", "boat_pwd") );
         setServerURL( m_dbHandler->retrieveCell("server", "1", "srv_addr") );
+
     } catch (const char * error) {
         m_logger.error("SailingRobot::setupHTTPSync() failed");
         //Kill thraed if setup fails
@@ -52,7 +58,7 @@ void HTTPSync::setupHTTPSync() {
 void HTTPSync::pushDatalogs() {
     std::string response = "";
     try {
-        response = pushData(m_dbHandler->getLogs(), "pushAllLogs");
+        response = pushData(m_dbHandler->getLogs(m_pushOnlyLatestLogs), "pushAllLogs");
 
          //remove logs after push
         if(m_removeLogs) {
