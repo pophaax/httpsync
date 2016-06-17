@@ -22,12 +22,14 @@ void HTTPSync::run() {
     m_logger.info("HTTPSync thread started.");
 
     setupHTTPSync();
-    // pushConfigs();
+    //pushConfigs was commented out 17/6/2016 - possible source of errors?
+    pushConfigs();
     pushWaypoints();
 
     while(isRunning())
     {
-        // updateConfigs();
+        //updateCongigs was commented out 17/6/2016 - possible source of errors?
+        updateConfigs();
         pushDatalogs();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
     }
