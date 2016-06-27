@@ -52,6 +52,7 @@ class HTTPSync {
 		std::string pushData(std::string data, std::string call);
 		std::string getData(std::string call);
 		void updateConfigs();
+		void updateWaypoints();
 
 		std::string performCURLCall(std::string serverCall);
 		bool checkIfNewConfig();

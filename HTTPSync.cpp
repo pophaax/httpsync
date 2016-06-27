@@ -22,13 +22,14 @@ void HTTPSync::run() {
     m_logger.info("HTTPSync thread started.");
 
     setupHTTPSync();
-    //pushConfigs was commented out 17/6/2016 - possible source of errors?
-    pushConfigs();
+    //updateWaypoints(); //Gets server waypoints on startup - works but might not always be wanted, could use a db setting ...
+    updateConfigs();
+
     pushWaypoints();
+    pushConfigs();
 
     while(isRunning())
     {
-        //updateCongigs was commented out 17/6/2016 - possible source of errors?
         updateConfigs();
         pushDatalogs();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
@@ -61,7 +62,6 @@ void HTTPSync::pushDatalogs() {
     std::string response = "";
     try {
         response = pushData(m_dbHandler->getLogs(m_pushOnlyLatestLogs), "pushAllLogs");
-
          //remove logs after push
         if(m_removeLogs) {
             //m_dbHandler->removeLogs(response);
@@ -78,7 +78,8 @@ void HTTPSync::pushDatalogs() {
 void HTTPSync::pushWaypoints() {
     try {
         std::string response = pushData(m_dbHandler->getWaypoints(), "pushWaypoints");
-        m_logger.info("Waypoints pushed to server");
+        m_logger.info("waypoints pushed to server");
+
     } catch(const char* error) {
         m_logger.error("Error in HTTPSync::pushWaypoints ");
     }
@@ -134,15 +135,28 @@ void HTTPSync::updateConfigs() {
     }
 }
 
+void HTTPSync::updateWaypoints() {
+
+    try{
+        std::string waypoints = getData("getWaypoints"); //Waypoints call implemented? //SERVE("", "getWaypoints")'
+        m_logger.info(waypoints);
+        m_dbHandler->updateWaypoints(waypoints);
+        m_logger.info("Waypoints fetched from web");
+    }catch(const char* error){
+        m_logger.error("Error in HTTPSync::updateWaypoints");
+    }
+
+}
+
 std::string HTTPSync::serve(std::string data, std::string call) {
     std::string serverCall = "";
     std::string response = "";
-
 
     if(data != "")
         serverCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD+"&data="+data;
     else
         serverCall = "serv="+call + "&id="+shipID+"&pwd="+shipPWD;
+        //serv=getAllConfigs&id=BOATID&pwd=BOATPW
 
     if(curl) {
         response = performCURLCall(serverCall);
