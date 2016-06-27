@@ -22,7 +22,6 @@ void HTTPSync::run() {
     m_logger.info("HTTPSync thread started.");
 
     setupHTTPSync();
-    //updateWaypoints(); //Gets server waypoints on startup - works but might not always be wanted, could use a db setting ...
     updateConfigs();
 
     pushWaypoints();
@@ -31,7 +30,7 @@ void HTTPSync::run() {
     while(isRunning())
     {
         updateWaypoints();
-        //updateConfigs();
+        updateConfigs();
         pushDatalogs();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
     }
