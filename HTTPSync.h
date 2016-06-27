@@ -56,6 +56,7 @@ class HTTPSync {
 
 		std::string performCURLCall(std::string serverCall);
 		bool checkIfNewConfig();
+		bool checkIfNewWaypoints();
 		bool isRunning();
 		void close();
 };

@@ -30,7 +30,8 @@ void HTTPSync::run() {
 
     while(isRunning())
     {
-        updateConfigs();
+        updateWaypoints();
+        //updateConfigs();
         pushDatalogs();
         std::this_thread::sleep_for(std::chrono::milliseconds(m_delay));
     }
@@ -121,6 +122,13 @@ bool HTTPSync::checkIfNewConfig() {
     return false;
 }
 
+bool HTTPSync::checkIfNewWaypoints(){
+    if (getData("checkIfNewWaypoints") == "1")
+   	    return true;
+
+    return false;
+}
+
 void HTTPSync::updateConfigs() {
     if(checkIfNewConfig()) {
         try {
@@ -137,13 +145,15 @@ void HTTPSync::updateConfigs() {
 
 void HTTPSync::updateWaypoints() {
 
-    try{
-        std::string waypoints = getData("getWaypoints"); //Waypoints call implemented? //SERVE("", "getWaypoints")'
-        m_logger.info(waypoints);
-        m_dbHandler->updateWaypoints(waypoints);
-        m_logger.info("Waypoints fetched from web");
-    }catch(const char* error){
-        m_logger.error("Error in HTTPSync::updateWaypoints");
+    if(checkIfNewWaypoints()){
+        try{
+            std::string waypoints = getData("getWaypoints"); //Waypoints call implemented? //SERVE("", "getWaypoints")'
+            m_logger.info(waypoints);
+            m_dbHandler->updateWaypoints(waypoints);
+            m_logger.info("Waypoints fetched from web");
+        }catch(const char* error){
+            m_logger.error("Error in HTTPSync::updateWaypoints");
+        }
     }
 
 }
