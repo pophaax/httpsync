@@ -63,6 +63,7 @@ void HTTPSync::pushDatalogs() {
     try {
         response = pushData(m_dbHandler->getLogs(m_pushOnlyLatestLogs), "pushAllLogs");
          //remove logs after push
+         //m_logger.info(response);
         if(m_removeLogs) {
             //m_dbHandler->removeLogs(response);
             m_dbHandler->clearLogs();
@@ -147,7 +148,6 @@ void HTTPSync::updateWaypoints() {
     if(checkIfNewWaypoints()){
         try{
             std::string waypoints = getData("getWaypoints"); //Waypoints call implemented? //SERVE("", "getWaypoints")'
-            m_logger.info(waypoints);
             m_dbHandler->updateWaypoints(waypoints);
             m_logger.info("Waypoints fetched from web");
         }catch(const char* error){
